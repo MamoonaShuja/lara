@@ -18,4 +18,7 @@ Route::get('/', function () {
 });
 Auth::routes();
 
+Route::prefix("admin")->middleware('auth:web')->namespace("Admin")->name("admin.")->group(function(){
+    Route::resource("category" , CategoryController::class);
+});
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
