@@ -36,7 +36,15 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->name);
+    
+        $validated = $request->validate(
+            [
+                'name' => 'required|string|unique:categories',
+            ],
+            [
+                'name.unique' => "This category has already been taken",
+            ]
+    );
         $category = new Category();
         $input = $request->all();
         $category->fill($input);
@@ -63,7 +71,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        return view("admin.category.edit")->with("item" , $category);
     }
 
     /**
@@ -75,7 +83,10 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
+        $input = $request->all();
+        $category->fill($input);
+        $category->update();
+        return redirect(route('admin.category.index'));
     }
 
     /**
@@ -86,6 +97,8 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        $category->delete();
+        return redirect(route('admin.category.index'));
+        
     }
 }
