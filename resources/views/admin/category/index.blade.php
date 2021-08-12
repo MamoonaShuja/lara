@@ -3,7 +3,8 @@
 @extends('layouts.main')
 @section('content')
 <div class="row justify-content-center">
-    <div class="col-md-8">
+    <div id="success"></div>
+    <div class="col-md-12 mt-3">
         <div class="card">
             
             <div class="card-header">
@@ -95,6 +96,37 @@
             $("#delForm").attr("action" ,href);
             $("#name").html(name);
             $("#del").modal("show");
+        })
+        $(document).on("submit" , "#form", function(e){
+            e.preventDefault();
+            $.ajax({
+                method: "POST",
+                url: $(this).prop('action'),
+                data: new FormData(this),
+                dataType: 'JSON',
+                contentType: false,
+                cache: false,
+                processData: false,
+                success: function(res){
+                    var out = "<ul>";
+                    if(res.errors){
+                        for (var error in res.errors) {
+                            var er = res.errors[error];
+                         for(i=0 ; i< er.length ; i++){
+                             out += "<li class='text-danger'>"+er[i]+"</li>";
+                         }   
+                        }
+                        out += "</ul>";
+                        $("#errors").html(out);
+                    }else{
+                        $("#my-modal").modal("hide");
+                        $("#success").html("<div class='alert alert-success'><p class='text-success'>"+res+"</p></div>")
+                    }
+                },error: function(res) {
+                    console.log(res.message);
+                }
+
+            });
         })
     </script>
     

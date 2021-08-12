@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Validator;
 
 class CategoryController extends Controller
 {
@@ -83,10 +84,23 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
+        $rules = [
+            'name' => 'required|string|unique:categories,name,'.$category->id,
+        ];
+        $messages = [
+            'name.unique' => "This category has already been taken",
+        ];
+
+        $validator = Validator::make($request->all(), $rules , $messages);
+ 
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->getMessageBag()->toArray()]);
+        }
         $input = $request->all();
         $category->fill($input);
         $category->update();
-        return redirect(route('admin.category.index'));
+        $msg = 'Updated Successfully.';
+        return response()->json($msg);
     }
 
     /**
