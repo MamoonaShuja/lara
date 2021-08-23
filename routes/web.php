@@ -18,7 +18,16 @@ Route::get('/', function () {
 });
 Auth::routes();
 
-Route::prefix("admin")->middleware('auth:web')->namespace("Admin")->name("admin.")->group(function(){
-    Route::resource("category" , CategoryController::class);
+Route::prefix('admin')->middleware(
+    function ($request, $next) {
+        $this->role = Auth::user()->role;
+        if ($this->role != 'admin') {
+            return abort(404);
+        }
+
+        return $next($request);
+    }
+)->namespace('Admin')->name('admin.')->group(function () {
+    Route::resource('category', CategoryController::class);
 });
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

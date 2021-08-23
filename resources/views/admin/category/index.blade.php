@@ -24,8 +24,7 @@ width:100% !important;
             </div>
 
             <div class="card-body">
-                <div class="table-responsive table-responsive-fx-scrl">
-                    <table id="table" class="table table-hover table-bordered" cellspacing="0" width="100%">
+                    <table id="table" class="table table-hover table-bordered w-100 mycontainer" cellspacing="0" width="100%">
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -33,7 +32,6 @@ width:100% !important;
                             </tr>
                         </thead>
                     </table>
-            </div>
             </div>
         </div>
     </div>
@@ -87,22 +85,14 @@ width:100% !important;
                ajax: '{{ route('admin.category.index') }}',
                columns: [
                			{ data: 'name', name: 'name',
-                           css: {
-                            'width': 200,
-                            'min-width': 200,
-                            'word-wrap': 'break-word',
-                            'max-width': 200,
-                        }
+                         
                     
                     },
             			{ data: 'action', searchable: false, orderable: false }
                      ],
-                     columnDefs: [
-                        { width: '50%', targets: 0 }
-                ]
-            });
+            }).columns.adjust();
             
-            table.columns.adjust();
+            table.columns.adjust().draw();
 
         $(document).on("click" ,".edit" , function(){
             var href = $(this).data("href");
