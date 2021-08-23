@@ -1,6 +1,11 @@
-@extends('layouts.app')
-
 @extends('layouts.main')
+@section('styles')
+    <style>
+        div.dataTables_wrapper {
+width:100% !important;
+}
+    </style>
+@endsection
 @section('content')
 <div class="row justify-content-center">
     <div id="success"></div>
@@ -19,25 +24,16 @@
             </div>
 
             <div class="card-body">
-                <table class="table table-light">
-                    <thead class="thead-light">
-                        <tr>
-                            <th>Name</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($category as $item)
+                <div class="table-responsive table-responsive-fx-scrl">
+                    <table id="table" class="table table-hover table-bordered" cellspacing="0" width="100%">
+                        <thead>
                             <tr>
-                                <td>{{$item->name}}</td>
-                                <td>
-                                    <i class="btn btn-primary fa fa-pencil edit" data-header="{{$item->name}}" data-href="{{route('admin.category.edit' , $item->id)}}"></i>
-                                    <i class="btn btn-danger fa fa-trash delete" data-header="{{$item->name}}" data-href="{{route('admin.category.destroy' , $item->id)}}"></i>
-                                </td>
+                                <th>Name</th>
+                                <th>Actions</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                    </table>
+            </div>
             </div>
         </div>
     </div>
@@ -73,7 +69,7 @@
                 <form id="delForm" action="" method="POST">
                     @method("delete")
                     @csrf
-                    <button type="submit" class="btn btn-danger">Yes</button>
+                    <button type="submit" class="btn btn-danger ">Yes</button>
                 </form>
             </div>
         </div>
@@ -83,14 +79,39 @@
 @section('scripts')
 
     <script>
-        $('.edit').on("click" , function(){
+        var table = $('#table').DataTable({
+			   ordering: false,
+               processing: true,
+               serverSide: true,
+               autoWidth: false,
+               ajax: '{{ route('admin.category.index') }}',
+               columns: [
+               			{ data: 'name', name: 'name',
+                           css: {
+                            'width': 200,
+                            'min-width': 200,
+                            'word-wrap': 'break-word',
+                            'max-width': 200,
+                        }
+                    
+                    },
+            			{ data: 'action', searchable: false, orderable: false }
+                     ],
+                     columnDefs: [
+                        { width: '50%', targets: 0 }
+                ]
+            });
+            
+            table.columns.adjust();
+
+        $(document).on("click" ,".edit" , function(){
             var href = $(this).data("href");
             var name = "Edit "+$(this).data("header");
             $("#my-modal-title").html(name);
             $(".modal-body").load(href);
             $("#my-modal").modal("show");
         })
-        $('.delete').on("click" , function(){
+        $(document).on("click" ,".delete" ,function(){
             var href = $(this).data("href");
             var name = $(this).data("header");
             $("#delForm").attr("action" ,href);
@@ -120,8 +141,30 @@
                         $("#errors").html(out);
                     }else{
                         $("#my-modal").modal("hide");
+                        table.ajax.reload();
                         $("#success").html("<div class='alert alert-success'><p class='text-success'>"+res+"</p></div>")
                     }
+                },error: function(res) {
+                    console.log(res.message);
+                }
+
+            });
+        });
+        $(document).on("submit" , "#delForm", function(e){
+            e.preventDefault();
+            $.ajax({
+                method: "POST",
+                url: $(this).prop('action'),
+                data: new FormData(this),
+                
+                dataType: 'JSON',
+                contentType: false,
+                cache: false,
+                processData: false,
+                success: function(res){
+                    $("#del").modal("hide");
+                    table.ajax.reload();
+                    $("#success").html("<div class='alert alert-success'><p class='text-success'>"+res+"</p></div>")
                 },error: function(res) {
                     console.log(res.message);
                 }

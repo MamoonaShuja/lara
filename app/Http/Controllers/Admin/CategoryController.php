@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Validator;
-
+use DataTables;
 class CategoryController extends Controller
 {
     /**
@@ -13,11 +13,21 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $category = Category::where("pid"  , 0)->orWhere('pid' , null)->get();
-        return view("admin.category.index")->with('category' , $category);
-    }
+        $datas = Category::where("pid"  , 0)->orWhere('pid' , null)->get();
+        if($request->ajax()){
+            return Datatables::of($datas)
+            ->addColumn('action', function (Category $data) {
+               $out = '<i class="btn btn-primary fa fa-pencil edit" data-header="'.$data->name.'" data-href="'.route('admin.category.edit' , $data->id).'"></i>
+               <i class="btn btn-danger fa fa-trash delete" data-header="'.$data->name.'" data-href="'.route('admin.category.destroy' , $data->id).'"></i>';
+               return $out;
+            })
+            ->rawColumns(['action'])
+            ->toJson(); //--- Returning Json Data To Client Side
+        }
+        return view("admin.category.index");
+    }   
 
     /**
      * Show the form for creating a new resource.
@@ -112,7 +122,8 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         $category->delete();
-        return redirect(route('admin.category.index'));
         
+        $msg = 'Deleted Successfully.';
+        return response()->json($msg);
     }
 }
