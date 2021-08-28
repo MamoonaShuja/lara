@@ -14,19 +14,23 @@
                 <li class="active">
                     <a href="{{ route('admin.category.index') }}"><span class="fa fa-home mr-3"></span>Category</a>
                 </li>
+                <li class="active">
+                    <a href="{{ route('admin.brand.index') }}"><span class="fa fa-home mr-3"></span>Brand</a>
+                </li><li class="active">
+                    <a href="{{ route('admin.product.index') }}"><span class="fa fa-home mr-3"></span>Products</a>
+                </li>
             @endif
         </ul>
 
         <div class="footer">
-            <a class="dropdown-item text-white" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
+            <a class="dropdown-item text-white" href="{{ route('logout') }}" onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
+                {{ __('Logout') }}
+            </a>
 
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                @csrf
+            </form>
         </div>
     </div>
 </nav>
