@@ -20,7 +20,7 @@ class CreateProductsTable extends Migration
             $table->string('name');
             $table->string('slug');
             $table->string('price');
-            $table->string('dicsount');
+            $table->string('discount');
             $table->string('whole_sale_price');
             $table->string('sales_price');
             $table->string('min_whole_sale_quan');

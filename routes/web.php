@@ -20,5 +20,6 @@ Route::prefix('admin')->middleware(
     Route::resource('category', CategoryController::class);
     Route::resource('brand', BrandController::class);
     Route::resource('product', ProductController::class);
+    Route::get('child/{id}', [App\Http\Controllers\Admin\ProductController::class, 'getChild'])->name('getchild');
 });
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

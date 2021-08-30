@@ -17,9 +17,11 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $datas = Category::where('pid', 0)->orWhere('pid', null)->get();
         if ($request->ajax()) {
-            return Datatables::of($datas)
+            if ($_GET['id'] == '1') {
+                $datas = Category::where('pid', 0)->orWhere('pid', null)->get();
+
+                return Datatables::of($datas)
             ->addColumn('action', function (Category $data) {
                 $out = '<i class="btn btn-primary fa fa-pencil edit" data-header="'.$data->name.'" data-href="'.route('admin.category.edit', $data->id).'"></i>
                <i class="btn btn-danger fa fa-trash delete" data-header="'.$data->name.'" data-href="'.route('admin.category.destroy', $data->id).'"></i>';
@@ -28,6 +30,23 @@ class CategoryController extends Controller
             })
             ->rawColumns(['action'])
             ->toJson(); //--- Returning Json Data To Client Side
+            } else {
+                $datas = Category::where('pid', '!=', 0)->where('pid', '!=', null)->get();
+
+                return Datatables::of($datas)
+            ->addColumn('pid', function (Category $data) {
+                $out = $data->cat->name;
+
+                return $out;
+            })->addColumn('action', function (Category $data) {
+                $out = '<i class="btn btn-primary fa fa-pencil edit" data-header="'.$data->name.'" data-href="'.route('admin.category.edit', $data->id).'"></i>
+               <i class="btn btn-danger fa fa-trash delete" data-header="'.$data->name.'" data-href="'.route('admin.category.destroy', $data->id).'"></i>';
+
+                return $out;
+            })
+            ->rawColumns(['action'])
+            ->toJson(); //--- Returning Json Data To Client Side
+            }
         }
 
         return view('admin.category.index');
@@ -40,7 +59,9 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return view('admin.category.create');
+        $categories = Category::where('pid', 0)->orWhere('pid', null)->get();
+
+        return view('admin.category.create')->with('categories', $categories);
     }
 
     /**

@@ -18,6 +18,11 @@ class Category extends Model
         return $this->hasMany("App\Models\Category", 'pid');
     }
 
+    public function cat()
+    {
+        return $this->belongsTo("App\Models\Category", 'pid');
+    }
+
     public function products()
     {
         return $this->hasMany('App\Models\Product');

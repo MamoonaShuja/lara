@@ -34,6 +34,32 @@ width:100% !important;
                     </table>
             </div>
         </div>
+        <div class="card mt-3">
+            
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ __('Sub Category') }}
+                    </div>
+                    <div class="col-md-6 ">
+                        <a href="{{route('admin.category.create')}}"><button class="float-right btn btn-primary"><i class="fa fa-plus"></i> Add New </button></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                    <table id="tablee" class="table table-hover table-bordered w-100 mycontainer" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Parent</th>
+
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                    </table>
+            </div>
+        </div>
     </div>
 </div>
 <div id="my-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="my-modal-title" aria-hidden="true">
@@ -82,7 +108,7 @@ width:100% !important;
                processing: true,
                serverSide: true,
                autoWidth: false,
-               ajax: '{{ route('admin.category.index') }}',
+               ajax: '{{ route('admin.category.index' , 'id=1') }}',
                columns: [
                			{ data: 'name', name: 'name',
                          
@@ -93,6 +119,26 @@ width:100% !important;
             }).columns.adjust();
             
             table.columns.adjust().draw();
+        var tablee = $('#tablee').DataTable({
+			   ordering: false,
+               processing: true,
+               serverSide: true,
+               autoWidth: false,
+               ajax: '{{ route('admin.category.index' , 'id=2') }}',
+               columns: [
+               			{ data: 'name', name: 'name',
+                         
+                    
+                    },
+                    { data: 'pid', name: 'pid',
+                         
+                    
+                    },
+            			{ data: 'action', searchable: false, orderable: false },
+                     ],
+            }).columns.adjust();
+            
+            tablee.columns.adjust().draw();
 
         $(document).on("click" ,".edit" , function(){
             var href = $(this).data("href");
@@ -132,6 +178,7 @@ width:100% !important;
                     }else{
                         $("#my-modal").modal("hide");
                         table.ajax.reload();
+                        tablee.ajax.reload();
                         $("#success").html("<div class='alert alert-success'><p class='text-success'>"+res+"</p></div>")
                     }
                 },error: function(res) {
@@ -154,6 +201,7 @@ width:100% !important;
                 success: function(res){
                     $("#del").modal("hide");
                     table.ajax.reload();
+                    tablee.ajax.reload();
                     $("#success").html("<div class='alert alert-success'><p class='text-success'>"+res+"</p></div>")
                 },error: function(res) {
                     console.log(res.message);
